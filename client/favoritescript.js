@@ -30,6 +30,14 @@
   //        }
   //    });
   // Here the apods are filled with dummy data.
+  fetch("http://localhost:8080/api/favorite")
+    .then((response) => response.json())
+    .then((jsonResponse) => {
+      for (apod of jsonResponse.results){
+        al.appendChild(makeAPOD(apod.iamge_url, apod.date));
+    }
+  });
+
   apods = [
     [
       "https://apod.nasa.gov/apod/image/2102/rosette_goldman_960.jpg",

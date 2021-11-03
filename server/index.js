@@ -2,7 +2,7 @@ const express = require("express");
 const bodyParser = require("body-parser");
 
 const mongoose = require("mongoose");
-const url = "mongodb://127.0.0.1:27017/node-mongo-hw"; // change this as needed
+const url = "mongodb://127.0.0.1:27017/backend-hw"; // change this as needed
 
 mongoose.connect(url, { useNewUrlParser: true });
 
@@ -23,6 +23,14 @@ var port = process.env.PORT || 8080;
 
 var router = express.Router();
 
+const Schema = mongoose.Schema;
+const image = new Schema({
+  date: String,
+  image_url : String,
+});
+
+const Images = mongoose.model("Images", image);
+
 // The method of the root url. Be friendly and welcome our user :)
 router.get("/", function (req, res) {
   res.json({ message: "Welcome to the APOD app." });
@@ -30,17 +38,35 @@ router.get("/", function (req, res) {
 
 router.get("/favorite", function (req, res) {
   // TODO:
-  res.json({ message: "TODO: here's the GET route" });
+  Images.find().then((results) => {
+    res.json({results});
+  });
 });
 
 router.post("/add", function (req, res) {
   // TODO:
-  res.json({ message: "TODO: Here's the add route" });
+  const url = req.body.image_url;
+  const date = req.body.date;
+  const newImage = new Images({
+    date: date,
+    image_url: url,
+  })
+  newImage.save((error, doc) => {
+    if (error) {
+      res.json({ status: "failure"})
+    } else {
+      res.json({
+        date: date,
+        image_url: url,
+      });
+    }
+  });
 });
 
 router.post("/delete", function (req, res) {
-  // TODO:
-  res.json({ message: "TODO: Here's the delete route" });
+  const date = req.body.date;
+  Images.findOneAndDelete({ date: date }).then(()=>{res.json({ message: "delete success" });
+  })
 });
 
 app.use("/api", router); // API Root url at: http://localhost:8080/api

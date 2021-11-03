@@ -5,6 +5,7 @@ var date = new Date();
 var year = date.getFullYear();
 var month = date.getMonth();
 var day = date.getDate();
+var url = "";
 
 const previousDate = (year, month, day) => {
   if (day - 1 < 1) {
@@ -24,10 +25,30 @@ document.getElementById("heart-button").addEventListener("click", () => {
     heart.src = "static/heart-filled.png";
     heart_status = 1;
     // TODO: update the database and mark this image as a favorite image.
+    fetch("http://localhost:8080/api/add", {
+      method : "POST",
+      body : JSON.stringify({ 
+        date: dateToString(year, month, day), 
+        image_url: url 
+      }),
+      headers: {
+        "Content-type": "application/json; charset=UTF-8",
+      }
+    })
   } else {
     heart_status = 0;
     heart.src = "static/heart.png";
     // TODO: update the database and un-mark this image as a favorite image.
+    fetch("http://localhost:8080/api/delete", {
+      method : "DELETE",
+      body : JSON.stringify({ 
+        date: dateToString(year, month, day), 
+      }),
+      headers: {
+        "Content-type": "application/json; charset=UTF-8",
+      }
+    })
+    
   }
 });
 
@@ -47,5 +68,6 @@ document.getElementById("next-button").addEventListener("click", () => {
       document.getElementById("apod-image").src = r.url;
       document.getElementById("apod-title").innerHTML = r.title;
       document.getElementById("apod-p").innerHTML = r.explanation;
+      url = r.url
     });
 });
